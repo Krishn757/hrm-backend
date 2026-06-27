@@ -32,7 +32,8 @@ router.post('/punch-in', authenticateToken, async (req, res) => {
   try {
     // 1. Verify Face
     try {
-      const aiResponse = await axios.post('http://localhost:8000/verify', {
+      const aiUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+      const aiResponse = await axios.post(`${aiUrl}/verify`, {
         user_id: userId,
         image: image
       });
@@ -79,7 +80,8 @@ router.post('/punch-out', authenticateToken, async (req, res) => {
   try {
     // 1. Verify Face
     try {
-      const aiResponse = await axios.post('http://localhost:8000/verify', {
+      const aiUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+      const aiResponse = await axios.post(`${aiUrl}/verify`, {
         user_id: userId,
         image: image
       });

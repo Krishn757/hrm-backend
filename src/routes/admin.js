@@ -31,7 +31,8 @@ router.post('/create-employee', authenticateToken, verifyAdmin, async (req, res)
     // Call Python AI API if image is provided
     if (image) {
       try {
-        const aiResponse = await axios.post('http://localhost:8000/register', {
+        const aiUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+        const aiResponse = await axios.post(`${aiUrl}/register`, {
           user_id: newUserId,
           image: image
         });
