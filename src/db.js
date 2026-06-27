@@ -48,6 +48,17 @@ export async function initializeDatabase() {
       );
     `);
 
+    // Create face_embeddings table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS face_embeddings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL UNIQUE,
+        embedding JSON NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+    `);
+
     // Insert default admin if not exists
     const [rows] = await connection.query(`SELECT * FROM users WHERE email = ?`, ['admin@hrm.com']);
     if (rows.length === 0) {

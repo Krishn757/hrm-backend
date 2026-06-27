@@ -120,4 +120,32 @@ router.post('/punch-out', authenticateToken, async (req, res) => {
   }
 });
 
+// Register Face for Employee
+router.post('/register-face', authenticateToken, async (req, res) => {
+  const { image } = req.body;
+  const userId = req.user.id;
+
+  if (!image) {
+    return res.status(400).json({ error: 'Image is required for face registration' });
+  }
+
+  try {
+    const aiUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+    const aiResponse = await axios.post(`${aiUrl}/register`, {
+      user_id: userId,
+      image: image
+    });
+
+    if (aiResponse.data.success) {
+      await pool.query('UPDATE users SET face_registered = 1 WHERE id = ?', [userId]);
+      res.json({ message: 'Face registered successfully' });
+    } else {
+      res.status(400).json({ error: 'Face registration failed' });
+    }
+  } catch (error) {
+    console.error("Employee Face Registration Error:", error.response?.data || error.message);
+    res.status(500).json({ error: error.response?.data?.detail || 'Face verification service unavailable' });
+  }
+});
+
 export default router;
